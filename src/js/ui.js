@@ -15,6 +15,12 @@ UIHandler.prototype.draw = function(){
 }
 
 /** ================================= **/
+/** Button                            **/
+/** ================================= **/
+
+
+
+/** ================================= **/
 /**   Initialization Code             **/
 /** ================================= **/
 
@@ -31,7 +37,8 @@ UIHandler.prototype.init = function(){
 /** Make a sprite **/
 function makeSprite(width, height, texPath){
 	// Load the texture file 
-	var texture = THREE.ImageUtils.loadTexture(texPath);
+	var texture = null;
+	if (texPath != null) texture = THREE.ImageUtils.loadTexture(texPath);
 	// Make a new basic material and give it the texture 
 	var mat = new THREE.MeshBasicMaterial({map:texture});
 	// Must set this to true or the texture will not draw correctly if there is alpha 
@@ -50,18 +57,18 @@ function makeSprite(width, height, texPath){
   geom.faces.push(new THREE.Face3(2,3,0));
 
   // Set the UV's for the faces 
-  geom.faceVertexUvs[0].push([
-  	new THREE.Vector2(0,1),
-  	new THREE.Vector2(0,0),
-  	new THREE.Vector2(1,0)]);
-  geom.faceVertexUvs[0].push([
-  	new THREE.Vector2(1,0),
-  	new THREE.Vector2(1,1),
-  	new THREE.Vector2(0,1)]);
-  geom.faces[0].normal.set(0,0,1); 
+  if (texture != null){
+	  geom.faceVertexUvs[0].push([
+	  	new THREE.Vector2(0,1),
+	  	new THREE.Vector2(0,0),
+	  	new THREE.Vector2(1,0)]);
+	  geom.faceVertexUvs[0].push([
+	  	new THREE.Vector2(1,0),
+	  	new THREE.Vector2(1,1),
+	  	new THREE.Vector2(0,1)]);
+	  geom.faces[0].normal.set(0,0,1); 
+	}
 
   // Make the mesh 
-  var mesh = new THREE.Mesh(geom, mat);
-
-  return mesh;
+  return new THREE.Mesh(geom, mat);
 }
