@@ -18,7 +18,45 @@ UIHandler.prototype.draw = function(){
 /** Button                            **/
 /** ================================= **/
 
+/** Basic button structure **/
+function mButton(x,y,width,height,image){
+	// Location
+	this.x = x;
+	this.y = y;
+	// Size
+	this.w = width;
+	this.h = height;
+	// Clicking functions 
+	this.clicked = false;
+	// Image 
+	this.mesh = makeSprite(width,height,image);
+	this.mesh.position.set(x,y,0);
+}
 
+/** Update Button state **/
+mButton.prototype.update = function(){
+	// Check if clicked 
+	if (this.contains(mouse.x, mouse.y) && mouse.left_down){
+		clicked = true;
+	}
+}
+
+/** Check if a location is inside button */
+mButton.prototype.contains = function(x,y){
+	if (x > this.x && x < this.x + this.width &&
+		y > this.y && y < this.y + this.height)
+		return true;
+	return false;
+}
+
+/** Check if button has been clicked **/
+mButton.prototype.isClicked = function(){
+	if (isClicked){
+		isClicked = false;
+		return true;
+	}
+	return false;
+}
 
 /** ================================= **/
 /**   Initialization Code             **/
