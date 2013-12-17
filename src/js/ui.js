@@ -2,11 +2,15 @@
 function UIHandler(){
 	// Scene to hold all geometry 
 	this.scene = new THREE.Scene();
+
+	// Components 
+	this.children = [];
 }
 
 /** Update UI State **/
 UIHandler.prototype.update = function(){
-	//this.scene.children[0].rotation.x += .01;
+	for (var i = 0; i < this.children.length; i++)
+		this.children[i].update();
 }
 
 /** Draw UI **/
@@ -19,7 +23,7 @@ UIHandler.prototype.draw = function(){
 /** ================================= **/
 
 /** Basic button structure **/
-function mButton(x,y,width,height,image){
+function mButton(x,y,width,height,image, clickFunc){
 	// Location
 	this.x = x;
 	this.y = y;
@@ -28,6 +32,7 @@ function mButton(x,y,width,height,image){
 	this.h = height;
 	// Clicking functions 
 	this.clicked = false;
+	this.onClick = clickFunc;
 	// Image 
 	this.mesh = makeSprite(width,height,image);
 	this.mesh.position.set(x,y,0);
@@ -37,14 +42,17 @@ function mButton(x,y,width,height,image){
 mButton.prototype.update = function(){
 	// Check if clicked 
 	if (this.contains(mouse.x, mouse.y) && mouse.left_down){
-		clicked = true;
+		if (this.onClick != null)
+			this.onClick();
+		else 
+			clicked = true;
 	}
 }
 
 /** Check if a location is inside button */
 mButton.prototype.contains = function(x,y){
-	if (x > this.x && x < this.x + this.width &&
-		y > this.y && y < this.y + this.height)
+	if (x > this.x && x < this.x + this.w &&
+		y > this.y && y < this.y + this.h)
 		return true;
 	return false;
 }
@@ -59,18 +67,8 @@ mButton.prototype.isClicked = function(){
 }
 
 /** ================================= **/
-/**   Initialization Code             **/
+/**   Helper Code             **/
 /** ================================= **/
-
-UIHandler.prototype.init = function(){
-	// Add Lables
-	var sprite = makeSprite(128,32,'res/ui_label_controls.png');
-	sprite.position.set(10,10,0);
-	this.scene.add(sprite);
-	sprite = makeSprite(128,32,'res/ui_label_legend.png');
-	sprite.position.set(10,250,0);
-	this.scene.add(sprite);
-}
 
 /** Make a sprite **/
 function makeSprite(width, height, texPath){
@@ -109,4 +107,26 @@ function makeSprite(width, height, texPath){
 
   // Make the mesh 
   return new THREE.Mesh(geom, mat);
+}
+
+/** ================================= **/
+/**   Initialization Code             **/
+/** ================================= **/
+
+UIHandler.prototype.init = function(){
+	// Add Lables
+	var sprite = makeSprite(128,32,'res/ui_label_controls.png');
+	sprite.position.set(10,10,0);
+	this.scene.add(sprite);
+	sprite = makeSprite(128,32,'res/ui_label_legend.png');
+	sprite.position.set(10,250,0);
+	this.scene.add(sprite);
+
+	// Make Reset button 
+	var button = new mButton(16,52,72,32,'res/button_reset.png', 
+		function(){
+			path.resetGridFully();
+			SCREEN_DIRTY = true;});
+	this.scene.add(button.mesh);
+	this.children.push(button);
 }
