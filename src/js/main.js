@@ -11,6 +11,8 @@ var time_step = (1000/FPS)/1000;
 function init(){
   // Window size 
   WIDTH = window.innerWidth, HEIGHT = window.innerHeight;
+  // Make the camera 
+  camera = new THREE.OrthographicCamera( 0, WIDTH, 0, HEIGHT, 1, -1);  
 
   // Setup program 
   path.init();
@@ -23,8 +25,8 @@ function init(){
   // Set the background color of the scene.
   renderer.setClearColor(new THREE.Color(0x353539));
   renderer.autoClear = false;               // Tell renderer not to auto clear
-  renderer.shadowMapCullFace = THREE.CullFaceBack; // Set the cull face 
-  
+  //renderer.setFaceCulling( THREE.CullFaceBack );
+
   document.body.appendChild(renderer.domElement);
 
   SCREEN_DIRTY = true;
@@ -47,6 +49,8 @@ function redraw()
   if (SCREEN_DIRTY){
     renderer.clear();
     path.draw();
+
+    SCREEN_DIRTY = false;
   }
 }
 

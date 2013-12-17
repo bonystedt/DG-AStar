@@ -10,7 +10,7 @@ PathHandler.prototype.update = function(){
 }
 
 /** Draw Pathfinding to screen **/
-PathHandler.prototype.Draw = function(){
+PathHandler.prototype.draw = function(){
 	this.ui.draw();
 }
 
