@@ -72,17 +72,21 @@ PathHandler.prototype.update = function(){
 		// Move start location if not goal location 
 		else if (this.brushType == BrushType.StartLoc){
 			if (!(this.goal.i == this.bLoc.i && this.goal.j == this.bLoc.j)){
+  			this.grid[this.start.i][this.start.j].setColor(COLOR_NORMAL_NODE);
 				this.start.i = this.bLoc.i;
 				this.start.j = this.bLoc.j;
   			this.grid[this.start.i][this.start.j].setColor(COLOR_START_NODE);
+  			this.grid[this.start.i][this.start.j].isObstacle = false;
 			}
 		}
 		// Move goal location if not start location 
 		else if (this.brushType == BrushType.GoalLoc){
 			if (!(this.start.i == this.bLoc.i && this.start.j == this.bLoc.j)){
+  			this.grid[this.goal.i][this.goal.j].setColor(COLOR_NORMAL_NODE);
 				this.goal.i = this.bLoc.i;
 				this.goal.j = this.bLoc.j;
   			this.grid[this.goal.i][this.goal.j].setColor(COLOR_GOAL_NODE);
+  			this.grid[this.goal.i][this.goal.j].isObstacle = false;
 			}
 		}
 
