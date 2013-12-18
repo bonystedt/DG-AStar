@@ -44,53 +44,26 @@ PathHandler.prototype.init = function(){
 PathHandler.prototype.update = function(){
 	this.ui.update();
 
-	// Get mouse grid location 
-	this.getGridLocFromMouse();
+	// Update brush if mouse is pressed 
+	if (mouse.left_down){
+		// Get mouse grid location 
+		this.getGridLocFromLoc(mouse);
 
-	// Draw on grid 
-	if (this.bLocValid && mouse.left_down){
-		// Clear the path if it has been created 
-		if (this.pathMade){
-			this.resetGridPath();
-			this.pathMade = false;
-		}
+		// Draw on grid if mouse location is valid 
+		if (this.bLocValid){
+			// Clear the path if it has been created 
+			if (this.pathMade){
+				this.resetGridPath();
+				this.pathMade = false;
+			}
+	 
+	 		// Set current block location
+			this.setBlockAtBrushLoc();
+	 		// Interpolate the brush to make smooth lines if brush is moving fast 
+			this.interpolateBrush(mouse.oldx, mouse.oldy, mouse.x, mouse.y);
 
-		// Turn block into a normal block if not start or goal
-		if (this.brushType == BrushType.Normal){
-			if (!this.isStartOrGoal(this.bLoc.i, this.bLoc.j)){
-				this.grid[this.bLoc.i][this.bLoc.j].setColor(COLOR_NORMAL_NODE);
-				this.grid[this.bLoc.i][this.bLoc.j].isObstacle = false;
-			}
+			SCREEN_DIRTY = true;
 		}
-		// Turn block into Obstacle if not start or goal
-		else if (this.brushType == BrushType.Obstacle){
-			if (!this.isStartOrGoal(this.bLoc.i, this.bLoc.j)){
-				this.grid[this.bLoc.i][this.bLoc.j].setColor(COLOR_OBSTACLE_NODE);
-				this.grid[this.bLoc.i][this.bLoc.j].isObstacle = true;
-			}
-		}
-		// Move start location if not goal location 
-		else if (this.brushType == BrushType.StartLoc){
-			if (!(this.goal.i == this.bLoc.i && this.goal.j == this.bLoc.j)){
-  			this.grid[this.start.i][this.start.j].setColor(COLOR_NORMAL_NODE);
-				this.start.i = this.bLoc.i;
-				this.start.j = this.bLoc.j;
-  			this.grid[this.start.i][this.start.j].setColor(COLOR_START_NODE);
-  			this.grid[this.start.i][this.start.j].isObstacle = false;
-			}
-		}
-		// Move goal location if not start location 
-		else if (this.brushType == BrushType.GoalLoc){
-			if (!(this.start.i == this.bLoc.i && this.start.j == this.bLoc.j)){
-  			this.grid[this.goal.i][this.goal.j].setColor(COLOR_NORMAL_NODE);
-				this.goal.i = this.bLoc.i;
-				this.goal.j = this.bLoc.j;
-  			this.grid[this.goal.i][this.goal.j].setColor(COLOR_GOAL_NODE);
-  			this.grid[this.goal.i][this.goal.j].isObstacle = false;
-			}
-		}
-
-		SCREEN_DIRTY = true;
 	}
 }
 
@@ -101,6 +74,91 @@ PathHandler.prototype.draw = function(){
 	// Draw UI to screen 
 	this.ui.draw();
 }
+
+/** Interpolate brush between two points **/
+PathHandler.prototype.interpolateBrush = function(x,y,x2,y2){
+
+  if (distance(x, y, x2, y2) > NODE_SIZE)
+  {
+    // Get the angle and the sides of the triangle
+    var angle = Math.atan2((y - y2), (x - x2));
+    var dx = Math.cos(angle) * NODE_SIZE;
+    var dy = Math.sin(angle) * NODE_SIZE;
+    // Set location values to the starting point
+    var nextx = x2;
+    var nexty = y2;
+    var cont = true;
+
+    while (cont)
+    {
+      // Shift next location by slope
+      nextx += dx;
+      nexty += dy;
+
+      // Check if next location has moved past target
+      // and if it has, then end loop. 
+      if ((x < x2 && nextx < x) || 
+          (x > x2 && nextx > x) || 
+          (y < y2 && nexty < y) ||
+          (y > y2 && nexty > y)){
+        cont = false;
+        break;
+      }
+
+      // Get next location 
+			this.getGridLocFromLoc({x:nextx, y:nexty});
+			if (this.bLocValid){
+				this.setBlockAtBrushLoc();
+			}
+    }
+  }
+}
+
+/** Set the node at the current brush location **/
+PathHandler.prototype.setBlockAtBrushLoc = function(){
+	// Turn block into a normal block if not start or goal
+	if (this.brushType == BrushType.Normal){
+		if (!this.isStartOrGoal(this.bLoc.i, this.bLoc.j)){
+			this.grid[this.bLoc.i][this.bLoc.j].setColor(COLOR_NORMAL_NODE);
+			this.grid[this.bLoc.i][this.bLoc.j].isObstacle = false;
+		}
+	}
+	// Turn block into Obstacle if not start or goal
+	else if (this.brushType == BrushType.Obstacle){
+		if (!this.isStartOrGoal(this.bLoc.i, this.bLoc.j)){
+			this.grid[this.bLoc.i][this.bLoc.j].setColor(COLOR_OBSTACLE_NODE);
+			this.grid[this.bLoc.i][this.bLoc.j].isObstacle = true;
+		}
+	}
+	// Move start location if not goal location 
+	else if (this.brushType == BrushType.StartLoc){
+		if (!(this.goal.i == this.bLoc.i && this.goal.j == this.bLoc.j)){
+			this.grid[this.start.i][this.start.j].setColor(COLOR_NORMAL_NODE);
+			this.start.i = this.bLoc.i;
+			this.start.j = this.bLoc.j;
+			this.grid[this.start.i][this.start.j].setColor(COLOR_START_NODE);
+			this.grid[this.start.i][this.start.j].isObstacle = false;
+		}
+	}
+	// Move goal location if not start location 
+	else if (this.brushType == BrushType.GoalLoc){
+		if (!(this.start.i == this.bLoc.i && this.start.j == this.bLoc.j)){
+			this.grid[this.goal.i][this.goal.j].setColor(COLOR_NORMAL_NODE);
+			this.goal.i = this.bLoc.i;
+			this.goal.j = this.bLoc.j;
+			this.grid[this.goal.i][this.goal.j].setColor(COLOR_GOAL_NODE);
+			this.grid[this.goal.i][this.goal.j].isObstacle = false;
+		}
+	}
+}
+
+/** Get the distance between the two points **/
+function distance(x,y,x2,y2){
+	var dx = x2 - x;
+	var dy = y2 - y;
+	return Math.sqrt((dx * dx) + (dy * dy))
+}
+
 
 /** ================================= **/
 /**     Grid Management               **/
@@ -167,14 +225,14 @@ PathHandler.prototype.resetGridPath = function(){
   }
 }
 
-/** Convert the mouse location into a grid location **/
-PathHandler.prototype.getGridLocFromMouse = function(){
+/** Convert the location into a grid location **/
+PathHandler.prototype.getGridLocFromLoc = function(loc){
 	// Setup variables 
-	var x = mouse.x - this.gridDrawLoc.x;
-	var y = mouse.y - this.gridDrawLoc.y;
+	var x = loc.x - this.gridDrawLoc.x;
+	var y = loc.y - this.gridDrawLoc.y;
 	var spaceSize = NODE_SIZE + this.gridSpacing;
 
-	// Convert mouse loc to grid locations 
+	// Convert loc to grid locations 
 	x = Math.floor(x/spaceSize);
 	y = Math.floor(y/spaceSize);
 

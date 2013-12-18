@@ -49,6 +49,8 @@ var keyboard_old = {};
 var mouse = {
   x:0, 
   y:0, 
+  oldx:0,
+  oldy:0,
   left_down: false, left_down_old: false,
   down_x: 0,
   down_y:0
@@ -75,10 +77,14 @@ function addEvent(node, name, func)
 function addMouseEvents()
 {
   addEvent(document, "mousemove", function(e){
+    mouse.oldx = mouse.x;
+    mouse.oldy = mouse.y;
     mouse.x = e.clientX-renderer.domElement.getBoundingClientRect().left;
     mouse.y = e.clientY-renderer.domElement.getBoundingClientRect().top;
     });
   addEvent(document, "mousedown", function(e){
+    mouse.oldx = mouse.x;
+    mouse.oldy = mouse.y;
     mouse.x = e.clientX-renderer.domElement.getBoundingClientRect().left;
     mouse.y = e.clientY-renderer.domElement.getBoundingClientRect().top;
     if (e.button == 0 && mouse.left_down_old == false){
@@ -89,6 +95,8 @@ function addMouseEvents()
   });
   
   addEvent(document, "mouseup", function(e){
+    mouse.oldx = mouse.x;
+    mouse.oldy = mouse.y;
     mouse.x = e.clientX-renderer.domElement.getBoundingClientRect().left;
     mouse.y = e.clientY-renderer.domElement.getBoundingClientRect().top;
     if (e.button == 0){
