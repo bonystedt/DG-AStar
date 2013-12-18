@@ -5,6 +5,7 @@ function UIHandler(){
 
 	// Components 
 	this.children = [];
+	this.currentBrush;
 }
 
 /** Update UI State **/
@@ -114,14 +115,25 @@ function makeSprite(width, height, texPath){
 /** ================================= **/
 
 UIHandler.prototype.init = function(){
-	// Add Lables
+	/** ================ **/
+	/** Labels           **/
+	/** ================ **/
+	// Add Big Lables
 	var sprite = makeSprite(128,32,'res/ui_label_controls.png');
 	sprite.position.set(10,10,0);
 	this.scene.add(sprite);
 	sprite = makeSprite(128,32,'res/ui_label_legend.png');
-	sprite.position.set(10,250,0);
+	sprite.position.set(10,200,0);
 	this.scene.add(sprite);
 
+	// Add Small Labels 
+	sprite = makeSprite(128,32,'res/ui_label_current.png');
+	sprite.position.set(16,136,0);
+	this.scene.add(sprite);
+
+	/** ================ **/
+	/** Buttons          **/
+	/** ================ **/
 	// Make Reset button 
 	var button = new mButton(16,52,72,32,'res/button_reset.png', 
 		function(){
@@ -146,35 +158,51 @@ UIHandler.prototype.init = function(){
 	this.scene.add(button.mesh);
 	this.children.push(button);
 
-	// Brush Buttons 
+	/** ================ **/
+	/** Brush Elements   **/
+	/** ================ **/
+	// Current Brush Icon 
+	this.currentBrush = makeSprite(15,15,'res/brush_icon.png');
+	this.currentBrush.position.set(70,136,0);
+	this.currentBrush.material.color.setHex(COLOR_OBSTACLE_NODE);
+	this.scene.add(this.currentBrush);
+
 	// Normal 
-	button = new mButton(16,136,15,15,'res/brush_icon.png', 
+	button = new mButton(16,160,15,15,'res/brush_icon.png', 
 		function(){
-			path.brushType = BrushType.Normal;});
+			path.brushType = BrushType.Normal;
+			path.ui.currentBrush.material.color.setHex(COLOR_NORMAL_NODE);
+			SCREEN_DIRTY = true;});
 	button.mesh.material.color.setHex(COLOR_NORMAL_NODE);
 	this.scene.add(button.mesh);
 	this.children.push(button);
 
 	// Obsticle
-	button = new mButton(35,136,15,15,'res/brush_icon.png', 
+	button = new mButton(35,160,15,15,'res/brush_icon.png', 
 		function(){
-			path.brushType = BrushType.Obstacle;});
+			path.brushType = BrushType.Obstacle;
+			path.ui.currentBrush.material.color.setHex(COLOR_OBSTACLE_NODE);
+			SCREEN_DIRTY = true;});
 	button.mesh.material.color.setHex(COLOR_OBSTACLE_NODE);
 	this.scene.add(button.mesh);
 	this.children.push(button);
 
 	// Start
-	button = new mButton(54,136,15,15,'res/brush_icon.png', 
+	button = new mButton(54,160,15,15,'res/brush_icon.png', 
 		function(){
-			path.brushType = BrushType.StartLoc;});
+			path.brushType = BrushType.StartLoc;
+			path.ui.currentBrush.material.color.setHex(COLOR_START_NODE);
+			SCREEN_DIRTY = true;});
 	button.mesh.material.color.setHex(COLOR_START_NODE);
 	this.scene.add(button.mesh);
 	this.children.push(button);
 
 	// Goal
-	button = new mButton(73,136,15,15,'res/brush_icon.png', 
+	button = new mButton(73,160,15,15,'res/brush_icon.png', 
 		function(){
-			path.brushType = BrushType.GoalLoc;});
+			path.brushType = BrushType.GoalLoc;
+			path.ui.currentBrush.material.color.setHex(COLOR_GOAL_NODE);
+			SCREEN_DIRTY = true;});
 	button.mesh.material.color.setHex(COLOR_GOAL_NODE);
 	this.scene.add(button.mesh);
 	this.children.push(button);
