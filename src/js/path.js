@@ -18,7 +18,7 @@ function PathHandler(){
 	this.goal = {i:0,j:0};
 
 	// Brush settings 
-	this.brushType = BrushType.Obsticle;
+	this.brushType = BrushType.Obstacle;
 	this.bLocValid = false;
 	this.bLoc = {i:0,j:0};
 
@@ -29,7 +29,7 @@ function PathHandler(){
 /** Brush Types */
 var BrushType = { 
   "Normal": 0,
-  "Obsticle": 1, 
+  "Obstacle": 1, 
   "StartLoc": 2, 
   "GoalLoc": 3
 };
@@ -59,14 +59,14 @@ PathHandler.prototype.update = function(){
 		if (this.brushType == BrushType.Normal){
 			if (!this.isStartOrGoal(this.bLoc.i, this.bLoc.j)){
 				this.grid[this.bLoc.i][this.bLoc.j].setColor(COLOR_NORMAL_NODE);
-				this.grid[this.bLoc.i][this.bLoc.j].isObsticle = false;
+				this.grid[this.bLoc.i][this.bLoc.j].isObstacle = false;
 			}
 		}
-		// Turn block into obsticle if not start or goal
-		else if (this.brushType == BrushType.Obsticle){
+		// Turn block into Obstacle if not start or goal
+		else if (this.brushType == BrushType.Obstacle){
 			if (!this.isStartOrGoal(this.bLoc.i, this.bLoc.j)){
-				this.grid[this.bLoc.i][this.bLoc.j].setColor(COLOR_OBSTICLE);
-				this.grid[this.bLoc.i][this.bLoc.j].isObsticle = true;
+				this.grid[this.bLoc.i][this.bLoc.j].setColor(COLOR_OBSTACLE_NODE);
+				this.grid[this.bLoc.i][this.bLoc.j].isObstacle = true;
 			}
 		}
 		// Move start location if not goal location 
@@ -134,7 +134,7 @@ PathHandler.prototype.resetGridFully = function(){
   for (var i = 0; i < this.gridWidth; i++){
     for (var j = 0; j < this.gridHeight; j++){
       this.grid[i][j].setColor(COLOR_NORMAL_NODE);
-      this.grid[i][j].isObsticle = false;
+      this.grid[i][j].isObstacle = false;
       this.grid[i][j].parent = -1;
     }
   }
@@ -154,7 +154,7 @@ PathHandler.prototype.resetGridFully = function(){
 PathHandler.prototype.resetGridPath = function(){
   for (var i = 0; i < this.gridWidth; i++){
     for (var j = 0; j < this.gridHeight; j++){
-			if (!this.isStartOrGoal(i,j) && !this.grid[i][j].isObsticle){
+			if (!this.isStartOrGoal(i,j) && !this.grid[i][j].isObstacle){
 	      this.grid[i][j].setColor(COLOR_NORMAL_NODE);
 			}
 	    
@@ -205,7 +205,7 @@ PathHandler.prototype.isOnGrid = function(i,j){
 var COLOR_START_NODE = 0xff0000;
 var COLOR_GOAL_NODE = 0x00ff00;
 var COLOR_NORMAL_NODE = 0x9c9c9c;
-var COLOR_OBSTICLE = 0x6a6a6a;
+var COLOR_OBSTACLE_NODE = 0x6a6a6a;
 var COLOR_CLOSED_NODE = 0x000000;
 var COLOR_OPEN_NODE = 0xed34e2;
 
@@ -214,7 +214,7 @@ var NODE_SIZE = 5;
 /** Node to be used in grid **/
 function Node(){
 	// Set true to make impassible 
-	this.isObsticle = false;
+	this.isObstacle = false;
 	// Node mesh for drawing 
 	this.mesh = makeSprite(NODE_SIZE,NODE_SIZE,'res/node.png');
 	// Parent node to this one 
@@ -235,17 +235,17 @@ PathHandler.prototype.findPath = function(){
 }
 
 /** ================================= **/
-/**     Obsticle Generation           **/
+/**     Obstacle Generation           **/
 /** ================================= **/
 
-/** Generate the amount of obsticles sent **/
-PathHandler.prototype.generateObsticles = function(amount){
+/** Generate the amount of Obstacles sent **/
+PathHandler.prototype.generateObstacles = function(amount){
 	for (var i = 0; i < amount; i++){
 		this.genViralObs();
 	}
 }
 
-/** Use to generate obsticles **/
+/** Use to generate Obstacles **/
 PathHandler.prototype.genViralObs = function(){
   // Get a staring location 
   var x = Math.round(Math.random() * (this.gridWidth - 1));
@@ -267,8 +267,8 @@ PathHandler.prototype.genViralObs = function(){
 
   // Set nodes in grid  
   for (var i = 0; i < closed.length; i++){
-    this.grid[closed[i].i][closed[i].j].isObsticle = true;
-    this.grid[closed[i].i][closed[i].j].setColor(COLOR_OBSTICLE);
+    this.grid[closed[i].i][closed[i].j].isObstacle = true;
+    this.grid[closed[i].i][closed[i].j].setColor(COLOR_OBSTACLE_NODE);
   }
 }
 

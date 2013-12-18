@@ -141,7 +141,7 @@ UIHandler.prototype.init = function(){
 	// Make generate path button 
 	button = new mButton(16,94,72,32,'res/button_gen_obst.png', 
 		function(){
-			path.generateObsticles(20);
+			path.generateObstacles(20);
 			SCREEN_DIRTY = true;});
 	this.scene.add(button.mesh);
 	this.children.push(button);
