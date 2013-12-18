@@ -11,23 +11,22 @@ var time_step = (1000/FPS)/1000;
 function init(){
   // Window size 
   WIDTH = window.innerWidth, HEIGHT = window.innerHeight;
-  // Make the camera 
-  camera = new THREE.OrthographicCamera( 0, WIDTH, 0, HEIGHT, 1, -1);  
 
-  // Setup program 
-  path.init();
-  initIO();
-        
   /** Setup renderer */
   // Create Renderer
   renderer = new THREE.WebGLRenderer();
   renderer.setSize(WIDTH, HEIGHT);
   // Set the background color of the scene.
   renderer.setClearColor(new THREE.Color(0x353539));
-  renderer.autoClear = false;               // Tell renderer not to auto clear
-  //renderer.setFaceCulling( THREE.CullFaceBack );
+  renderer.autoClear = false; // Tell renderer not to auto clear
 
   document.body.appendChild(renderer.domElement);
+
+  // Setup program 
+  path.init();
+  initIO();
+  // Make the camera 
+  camera = new THREE.OrthographicCamera( 0, WIDTH, 0, HEIGHT, 1, -1);  
 
   SCREEN_DIRTY = true;
 }

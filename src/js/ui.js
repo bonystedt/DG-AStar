@@ -129,4 +129,12 @@ UIHandler.prototype.init = function(){
 			SCREEN_DIRTY = true;});
 	this.scene.add(button.mesh);
 	this.children.push(button);
+
+	// Make find path button 
+	button = new mButton(98,52,72,32,'res/button_find_path.png', 
+		function(){
+			path.findPath();
+			SCREEN_DIRTY = true;});
+	this.scene.add(button.mesh);
+	this.children.push(button);
 }
