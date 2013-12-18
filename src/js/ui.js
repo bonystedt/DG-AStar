@@ -206,4 +206,71 @@ UIHandler.prototype.init = function(){
 	button.mesh.material.color.setHex(COLOR_GOAL_NODE);
 	this.scene.add(button.mesh);
 	this.children.push(button);
+
+	/** ================ **/
+	/** Legend           **/
+	/** ================ **/
+
+	// Normal legend 
+	sprite = makeSprite(15,15,'res/brush_icon.png');
+	sprite.material.color.setHex(COLOR_NORMAL_NODE);
+	sprite.position.set(16,235,0);
+	this.scene.add(sprite);
+	sprite = makeSprite(128,32,'res/ui_label_normal.png');
+	sprite.position.set(34,235,0);
+	this.scene.add(sprite);
+
+	// Obstacle legend 
+	sprite = makeSprite(15,15,'res/brush_icon.png');
+	sprite.material.color.setHex(COLOR_OBSTACLE_NODE);
+	sprite.position.set(16,252,0);
+	this.scene.add(sprite);
+	sprite = makeSprite(128,32,'res/ui_label_obstacle.png');
+	sprite.position.set(34,252,0);
+	this.scene.add(sprite);
+
+	// Start legend 
+	sprite = makeSprite(15,15,'res/brush_icon.png');
+	sprite.material.color.setHex(COLOR_START_NODE);
+	sprite.position.set(16,269,0);
+	this.scene.add(sprite);
+	sprite = makeSprite(128,32,'res/ui_label_startloc.png');
+	sprite.position.set(34,269,0);
+	this.scene.add(sprite);
+
+	// Goal legend 
+	sprite = makeSprite(15,15,'res/brush_icon.png');
+	sprite.material.color.setHex(COLOR_GOAL_NODE);
+	sprite.position.set(16,286,0);
+	this.scene.add(sprite);
+	sprite = makeSprite(128,32,'res/ui_label_goalloc.png');
+	sprite.position.set(34,286,0);
+	this.scene.add(sprite);
+
+	// Open legend 
+	sprite = makeSprite(15,15,'res/brush_icon.png');
+	sprite.material.color.setHex(COLOR_OPEN_NODE);
+	sprite.position.set(16,303,0);
+	this.scene.add(sprite);
+	sprite = makeSprite(128,32,'res/ui_label_open.png');
+	sprite.position.set(34,303,0);
+	this.scene.add(sprite);
+
+	// Closed legend 
+	sprite = makeSprite(15,15,'res/brush_icon.png');
+	sprite.material.color.setHex(COLOR_CLOSED_NODE);
+	sprite.position.set(16,320,0);
+	this.scene.add(sprite);
+	sprite = makeSprite(128,32,'res/ui_label_closed.png');
+	sprite.position.set(34,320,0);
+	this.scene.add(sprite);
+
+	// Path legend 
+	sprite = makeSprite(15,15,'res/brush_icon.png');
+	sprite.material.color.setHex(COLOR_FOUNDPATH_NODE);
+	sprite.position.set(16,337,0);
+	this.scene.add(sprite);
+	sprite = makeSprite(128,32,'res/ui_label_path.png');
+	sprite.position.set(34,337,0);
+	this.scene.add(sprite);
 }
