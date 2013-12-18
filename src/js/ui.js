@@ -145,4 +145,37 @@ UIHandler.prototype.init = function(){
 			SCREEN_DIRTY = true;});
 	this.scene.add(button.mesh);
 	this.children.push(button);
+
+	// Brush Buttons 
+	// Normal 
+	button = new mButton(16,136,15,15,'res/brush_icon.png', 
+		function(){
+			path.brushType = BrushType.Normal;});
+	button.mesh.material.color.setHex(COLOR_NORMAL_NODE);
+	this.scene.add(button.mesh);
+	this.children.push(button);
+
+	// Obsticle
+	button = new mButton(35,136,15,15,'res/brush_icon.png', 
+		function(){
+			path.brushType = BrushType.Obstacle;});
+	button.mesh.material.color.setHex(COLOR_OBSTACLE_NODE);
+	this.scene.add(button.mesh);
+	this.children.push(button);
+
+	// Start
+	button = new mButton(54,136,15,15,'res/brush_icon.png', 
+		function(){
+			path.brushType = BrushType.StartLoc;});
+	button.mesh.material.color.setHex(COLOR_START_NODE);
+	this.scene.add(button.mesh);
+	this.children.push(button);
+
+	// Goal
+	button = new mButton(73,136,15,15,'res/brush_icon.png', 
+		function(){
+			path.brushType = BrushType.GoalLoc;});
+	button.mesh.material.color.setHex(COLOR_GOAL_NODE);
+	this.scene.add(button.mesh);
+	this.children.push(button);
 }
