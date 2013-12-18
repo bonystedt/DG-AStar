@@ -191,11 +191,13 @@ PathHandler.prototype.isStartOrGoal = function(i,j){
 	return false;
 }
 
-/** Find the path through the grid **/
-PathHandler.prototype.findPath = function(){
-	// TODO 
+/** Check if the sent location is on grid **/
+PathHandler.prototype.isOnGrid = function(i,j){
+	if (i < 0 || i > this.gridWidth - 1 || 
+		j < 0 || j > this.gridHeight - 1)
+		return false;
+	return true;
 }
-
 
 /** ================================= **/
 /**     Pathfinding                   **/
@@ -222,4 +224,130 @@ function Node(){
 /** Shortcut to set nodes color easily **/
 Node.prototype.setColor = function(color){
 	this.mesh.material.color.setHex(color);
+}
+
+/** Find the path through the grid **/
+PathHandler.prototype.findPath = function(){
+	// TODO 
+
+
+	this.pathMade = true;
+}
+
+/** ================================= **/
+/**     Obsticle Generation           **/
+/** ================================= **/
+
+/** Generate the amount of obsticles sent **/
+PathHandler.prototype.generateObsticles = function(amount){
+	for (var i = 0; i < amount; i++){
+		this.genViralObs();
+	}
+}
+
+/** Use to generate obsticles **/
+PathHandler.prototype.genViralObs = function(){
+  // Get a staring location 
+  var x = Math.round(Math.random() * (this.gridWidth - 1));
+  var y = Math.round(Math.random() * (this.gridHeight - 1));
+
+  // Lists 
+  var open = [];   // List of nodes to go through
+  var closed = []; // List of finished nodes 
+
+  // Starting node 
+  open.push(new ViralNode(x,y,1));
+
+  // Spread Virus
+  while (open.length != 0){
+    open[0].addNeighbors(open, closed, .5);
+    closed.push(open[0]);
+    open.splice(0, 1);
+  }
+
+  // Set nodes in grid  
+  for (var i = 0; i < closed.length; i++){
+    this.grid[closed[i].i][closed[i].j].isObsticle = true;
+    this.grid[closed[i].i][closed[i].j].setColor(COLOR_OBSTICLE);
+  }
+}
+
+/** A viral noded used to generate other viral nodes **/
+function ViralNode(i,j,percent){
+  this.i = i;
+  this.j = j;
+  this.percent = percent;
+}
+
+/** Add neighbors of this node to open list.
+ * open: neighbors to look at
+ * closed: allready looked at nodes
+ * frac: amount to divided percent by. **/
+ViralNode.prototype.addNeighbors = function(open, closed, frac){
+  var per = this.percent * frac;
+
+  // Add left 
+  if (Math.random() < per){
+    var node = new ViralNode(this.i-1,this.j,per);
+    if (!path.isStartOrGoal(node.i, node.j) && path.isOnGrid(node.i, node.j)) 
+    	addViralToList(node,open,closed);
+  }
+
+  // Add top left
+  if (Math.random() < per){
+    var node = new ViralNode(this.i-1,this.j-1,per);
+    if (!path.isStartOrGoal(node.i, node.j) && path.isOnGrid(node.i, node.j)) 
+    	addViralToList(node,open,closed);
+  }
+
+  // Add top 
+  if (Math.random() < per){
+    var node = new ViralNode(this.i,this.j-1,per);
+    if (!path.isStartOrGoal(node.i, node.j) && path.isOnGrid(node.i, node.j)) 
+    	addViralToList(node,open,closed);
+  }
+
+  // Add top right
+  if (Math.random() < per){
+    var node = new ViralNode(this.i+1,this.j-1,per);
+    if (!path.isStartOrGoal(node.i, node.j) && path.isOnGrid(node.i, node.j)) 
+    	addViralToList(node,open,closed);
+  }
+
+  // Add right
+  if (Math.random() < per){
+    var node = new ViralNode(this.i+1,this.j,per);
+    if (!path.isStartOrGoal(node.i, node.j) && path.isOnGrid(node.i, node.j)) 
+    	addViralToList(node,open,closed);
+  }
+
+  // Add bottom right 
+  if (Math.random() < per){
+    var node = new ViralNode(this.i+1,this.j+1,per);
+    if (!path.isStartOrGoal(node.i, node.j) && path.isOnGrid(node.i, node.j)) 
+    	addViralToList(node,open,closed);
+  }
+
+  // Add bottom  
+  if (Math.random() < per){
+    var node = new ViralNode(this.i,this.j+1,per);
+    if (!path.isStartOrGoal(node.i, node.j) && path.isOnGrid(node.i, node.j)) 
+    	addViralToList(node,open,closed);
+  }
+
+  // Add bottom  
+  if (Math.random() < per){
+    var node = new ViralNode(this.i+1,this.j-1,per);
+    if (!path.isStartOrGoal(node.i, node.j) && path.isOnGrid(node.i, node.j)) 
+    	addViralToList(node,open,closed);
+  }
+}
+
+/** Try and add node to the open or closed list **/
+function addViralToList(node, open, closed){
+  for (var i = 0; i < open.length; i++)
+    if (open[i].i == node.i && open[i].j == node.j) return;
+  for (var i = 0; i < closed.length; i++)
+    if (closed[i].i == node.i && closed[i].j == node.j) return;
+  open.push(node);
 }

@@ -41,7 +41,7 @@ function mButton(x,y,width,height,image, clickFunc){
 /** Update Button state **/
 mButton.prototype.update = function(){
 	// Check if clicked 
-	if (this.contains(mouse.x, mouse.y) && mouse.left_down){
+	if (this.contains(mouse.x, mouse.y) && mouse.left_down && !mouse.left_down_old){
 		if (this.onClick != null)
 			this.onClick();
 		else 
@@ -134,6 +134,14 @@ UIHandler.prototype.init = function(){
 	button = new mButton(98,52,72,32,'res/button_find_path.png', 
 		function(){
 			path.findPath();
+			SCREEN_DIRTY = true;});
+	this.scene.add(button.mesh);
+	this.children.push(button);
+
+	// Make generate path button 
+	button = new mButton(16,94,72,32,'res/button_gen_obst.png', 
+		function(){
+			path.generateObsticles(20);
 			SCREEN_DIRTY = true;});
 	this.scene.add(button.mesh);
 	this.children.push(button);
