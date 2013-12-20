@@ -378,119 +378,131 @@ PathHandler.prototype.addNeighbors = function(i,j,open,closed,parent){
   // Check left 
   if (i-1 >= 0 && !this.grid[i-1][j].isObstacle){
     // Set up node variables 
-    this.grid[i-1][j].G = parent.G + MOVE_COST;
-    this.grid[i-1][j].parent = parent;
-    this.grid[i-1][j].setHeuristic(this.goal);
+    var dummy_node = new Node(i-1,j);
+    dummy_node.G = parent.G + MOVE_COST;
+    dummy_node.parent = parent;
+    dummy_node.setHeuristic(this.goal);
 
     // Add to open list
-    this.addToOpenList(this.grid[i-1][j],open,closed);
+    this.addToOpenList(dummy_node,open,closed,i-1,j);
   }
 
   // Check Top Left 
   if (i-1 >= 0 && j-1 >= 0 && !this.grid[i-1][j-1].isObstacle){
     // Set up node variables 
-    this.grid[i-1][j-1].G = parent.G + MOVE_COST;
-    this.grid[i-1][j-1].parent = parent;
-    this.grid[i-1][j-1].setHeuristic(this.goal);
+    var dummy_node = new Node(i-1,j-1);
+    dummy_node.G = parent.G + MOVE_COST;
+    dummy_node.parent = parent;
+    dummy_node.setHeuristic(this.goal);
 
     // Add to open list
-    this.addToOpenList(this.grid[i-1][j-1],open,closed);
+    this.addToOpenList(dummy_node,open,closed,i-1,j-1);
   }
 
   // Check top
   if (j-1 >= 0 && !this.grid[i][j-1].isObstacle){
     // Set up node variables 
-    this.grid[i][j-1].G = parent.G + MOVE_COST;
-    this.grid[i][j-1].parent = parent;
-    this.grid[i][j-1].setHeuristic(this.goal);
+    var dummy_node = new Node(i,j-1);
+    dummy_node.G = parent.G + MOVE_COST;
+    dummy_node.parent = parent;
+    dummy_node.setHeuristic(this.goal);
 
     // Add to open list
-    this.addToOpenList(this.grid[i][j-1],open,closed);
+    this.addToOpenList(dummy_node,open,closed,i,j-1);
   }
 
   // Check top right 
   if (i+1 < this.grid.length && j-1 >= 0 && !this.grid[i+1][j-1].isObstacle){
     // Set up node variables 
-    this.grid[i+1][j-1].G = parent.G + MOVE_COST;
-    this.grid[i+1][j-1].parent = parent;
-    this.grid[i+1][j-1].setHeuristic(this.goal);
+    var dummy_node = new Node(i+1,j-1);
+    dummy_node.G = parent.G + MOVE_COST;
+    dummy_node.parent = parent;
+    dummy_node.setHeuristic(this.goal);
 
     // Add to open list
-    this.addToOpenList(this.grid[i+1][j-1],open,closed);
+    this.addToOpenList(dummy_node,open,closed,i+1,j-1);
   }
 
   // Check right
   if (i+1 < this.grid.length && !this.grid[i+1][j].isObstacle){
     // Set up node variables 
-    this.grid[i+1][j].G = parent.G + MOVE_COST;
-    this.grid[i+1][j].parent = parent;
-    this.grid[i+1][j].setHeuristic(this.goal);
+    var dummy_node = new Node(i+1,j);
+    dummy_node.G = parent.G + MOVE_COST;
+    dummy_node.parent = parent;
+    dummy_node.setHeuristic(this.goal);
 
     // Add to open list
-    this.addToOpenList(this.grid[i+1][j],open,closed);
+    this.addToOpenList(dummy_node,open,closed,i+1,j);
   }
 
   // Check bottom right
-  if (j+1 < this.grid[i].length && i+1 < this.grid.length && 
+  if (i+1 < this.grid.length && j+1 < this.grid[i].length && 
     !this.grid[i+1][j+1].isObstacle){
     // Set up node variables 
-    this.grid[i+1][j+1].G = parent.G + MOVE_COST;
-    this.grid[i+1][j+1].parent = parent;
-    this.grid[i+1][j+1].setHeuristic(this.goal);
+    var dummy_node = new Node(i+1,j+1);
+    dummy_node.G = parent.G + MOVE_COST;
+    dummy_node.parent = parent;
+    dummy_node.setHeuristic(this.goal);
 
     // Add to open list
-    this.addToOpenList(this.grid[i+1][j+1],open,closed);
+    this.addToOpenList(dummy_node,open,closed,i+1,j+1);
   }
 
   // Check bottom
   if (j+1 < this.grid[i].length && !this.grid[i][j+1].isObstacle){
     // Set up node variables 
-    this.grid[i][j+1].G = parent.G + MOVE_COST;
-    this.grid[i][j+1].parent = parent;
-    this.grid[i][j+1].setHeuristic(this.goal);
+    var dummy_node = new Node(i,j+1);
+    dummy_node.G = parent.G + MOVE_COST;
+    dummy_node.parent = parent;
+    dummy_node.setHeuristic(this.goal);
 
     // Add to open list
-    this.addToOpenList(this.grid[i][j+1],open,closed);
+    this.addToOpenList(dummy_node,open,closed,i,j+1);
   }
 
   // Check bottom left
-  if (j+1 < this.grid[i].length && i-1 >= 0 && 
+  if (i-1 >= 0 && j+1 < this.grid[i].length && 
     !this.grid[i-1][j+1].isObstacle){
     // Set up node variables 
-    this.grid[i-1][j+1].G = parent.G + MOVE_COST;
-    this.grid[i-1][j+1].parent = parent;
-    this.grid[i-1][j+1].setHeuristic(this.goal);
+    var dummy_node = new Node(i-1,j+1);
+    dummy_node.G = parent.G + MOVE_COST;
+    dummy_node.parent = parent;
+    dummy_node.setHeuristic(this.goal);
 
     // Add to open list
-    this.addToOpenList(this.grid[i-1][j+1],open,closed);
+    this.addToOpenList(dummy_node,open,closed,i-1,j+1);
   }
 }
 
 // Add to open
-PathHandler.prototype.addToOpenList = function(node, open,closed){
+PathHandler.prototype.addToOpenList = function(dummy_node,open,closed,mi,mj){
   // Check if legal
   for (var i = 0; i < open.length; i++){
-    if (open[i].i == node.i && open[i].j == node.j)
+    if (open[i].i == dummy_node.i && open[i].j == dummy_node.j)
     {
-      /*if (node.G < open[i].G){
-        open[i].G = node.G;
-        open[i].parent = node.parent;
-      }*/
+      if (dummy_node.G < open[i].G){
+        open[i].G = dummy_node.G;
+        open[i].parent = dummy_node.parent;
+      }
       return;
     }
   }
   for (var i = 0; i < closed.length; i++){
-    if (closed[i].i == node.i && closed[i].j == node.j)
+    if (closed[i].i == dummy_node.i && closed[i].j == dummy_node.j)
     {
-      /*if (node.G < closed[i].G){
-        closed[i].G = node.G;
-        closed[i].parent = node.parent;
-      }*/
+      if (dummy_node.G < closed[i].G){
+        closed[i].G = dummy_node.G;
+        closed[i].parent = dummy_node.parent;
+      }
       return;
     }
   }
 
-  open.push(node);
+  // Add node to list if not in list 
+  this.grid[mi][mj].G = dummy_node.G;
+  this.grid[mi][mj].H = dummy_node.H;
+  this.grid[mi][mj].parent = dummy_node.parent;
+  open.push(this.grid[mi][mj]);
 }
 
 /** ================================= **/
