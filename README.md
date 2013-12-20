@@ -1,10 +1,11 @@
 DG A* Example
 =============
 
-**Discription**
+Discription
+-----------
 
 
-**How To Use**
-
+How To Use
+----------
 
 

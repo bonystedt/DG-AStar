@@ -171,7 +171,7 @@ PathHandler.prototype.makeGrid = function(){
   for (var i = 0; i < this.gridWidth; i++){
     this.grid[i] = [this.gridHeight];
     for (var j = 0; j < this.gridHeight; j++){
-      this.grid[i][j] = new Node();
+      this.grid[i][j] = new Node(i,j); 
       this.grid[i][j].setColor(COLOR_NORMAL_NODE);
       this.grid[i][j].mesh.position.set(
       	this.gridDrawLoc.x + ((NODE_SIZE+ this.gridSpacing) * i),
@@ -274,14 +274,24 @@ var COLOR_FOUNDPATH_NODE = 0x0000ff;
 
 var NODE_SIZE = 5;
 
+// A* Movement costs 
+var MOVE_COST = 1;
+var MOVE_COST_DIAG = 2;
+
 /** Node to be used in grid **/
-function Node(){
-	// Set true to make impassible 
-	this.isObstacle = false;
-	// Node mesh for drawing 
-	this.mesh = makeSprite(NODE_SIZE,NODE_SIZE,'res/node.png');
-	// Parent node to this one 
-	this.parent = -1;
+function Node(i,j){
+  this.i = i;
+  this.j = j;
+  // Our G score value 
+  this.G = 0;
+  // Our heuristic value 
+  this.H = 0;
+  // Set true to make impassible 
+  this.isObstacle = false;
+  // Node mesh for drawing 
+  this.mesh = makeSprite(NODE_SIZE,NODE_SIZE,'res/node.png');
+  // Parent node to this one 
+  this.parent = -1;
 }
 
 /** Shortcut to set nodes color easily **/
@@ -289,12 +299,198 @@ Node.prototype.setColor = function(color){
 	this.mesh.material.color.setHex(color);
 }
 
+// Get node F score 
+Node.prototype.F = function(){ 
+  return this.G + this.H;
+}
+
+// Set Heuristic value 
+Node.prototype.setHeuristic = function(goal){
+  var dx = Math.abs(this.i - goal.i) * NODE_SIZE;
+  var dy = Math.abs(this.j - goal.j) * NODE_SIZE;
+  // Movement cost 
+  var D = 1;
+  this.H = D * Math.max(dx, dy);
+}
+
 /** Find the path through the grid **/
 PathHandler.prototype.findPath = function(){
-	// TODO 
+  // Blocks to look at
+  var open = [];
+  // Current Path Blocks 
+  var closed = [];
 
+  // Set up first node 
+  var current = this.grid[this.start.i][this.start.j];
+  current.setHeuristic(this.goal);
+  open.push(current);
 
-	this.pathMade = true;
+  // Search grid for correct path 
+  while ((current.i == this.goal.i && current.j == this.goal.j) == false){
+    // Take current out of open list and add it to closed
+    var index = open.indexOf(current);
+    if (index >= 0) open.splice(index, 1);
+    closed.push(current);
+
+    // Add neighbors to open list 
+    this.addNeighbors(current.i, current.j,open,closed,current);
+
+    // Find next closest path 
+    if (open.length == 0)break;
+    current = open[0];
+    for (var i = 1; i < open.length; i++){
+      if (open[i].F() < current.F())
+        current = open[i];
+    }
+  }
+
+  // Set block colors 
+  for (var i = 0; i < closed.length; i++){
+    closed[i].setColor(COLOR_CLOSED_NODE);
+  }
+  for (var i = 0; i < open.length; i++){
+    open[i].setColor(COLOR_OPEN_NODE);
+  }
+  
+  // Set correct path colors 
+  var i = 0;
+  console.clear();
+  while (current.parent != -1){
+    // Set node color
+    current.setColor(COLOR_FOUNDPATH_NODE)
+
+    // Move to next node 
+    current = current.parent;
+
+    console.log(current.i + ", " + current.j);
+
+    i++;
+    if (i>=2500)break;
+  }
+
+  // Set path made to true 
+  this.pathMade = true;
+  SCREEN_DIRTY = true;
+}
+
+/** Add Neighbors of this node to the open list **/
+PathHandler.prototype.addNeighbors = function(i,j,open,closed,parent){
+  // Check left 
+  if (i-1 >= 0 && !this.grid[i-1][j].isObstacle){
+    // Set up node variables 
+    this.grid[i-1][j].G = parent.G + MOVE_COST;
+    this.grid[i-1][j].parent = parent;
+    this.grid[i-1][j].setHeuristic(this.goal);
+
+    // Add to open list
+    this.addToOpenList(this.grid[i-1][j],open,closed);
+  }
+
+  // Check Top Left 
+  if (i-1 >= 0 && j-1 >= 0 && !this.grid[i-1][j-1].isObstacle){
+    // Set up node variables 
+    this.grid[i-1][j-1].G = parent.G + MOVE_COST;
+    this.grid[i-1][j-1].parent = parent;
+    this.grid[i-1][j-1].setHeuristic(this.goal);
+
+    // Add to open list
+    this.addToOpenList(this.grid[i-1][j-1],open,closed);
+  }
+
+  // Check top
+  if (j-1 >= 0 && !this.grid[i][j-1].isObstacle){
+    // Set up node variables 
+    this.grid[i][j-1].G = parent.G + MOVE_COST;
+    this.grid[i][j-1].parent = parent;
+    this.grid[i][j-1].setHeuristic(this.goal);
+
+    // Add to open list
+    this.addToOpenList(this.grid[i][j-1],open,closed);
+  }
+
+  // Check top right 
+  if (i+1 < this.grid.length && j-1 >= 0 && !this.grid[i+1][j-1].isObstacle){
+    // Set up node variables 
+    this.grid[i+1][j-1].G = parent.G + MOVE_COST;
+    this.grid[i+1][j-1].parent = parent;
+    this.grid[i+1][j-1].setHeuristic(this.goal);
+
+    // Add to open list
+    this.addToOpenList(this.grid[i+1][j-1],open,closed);
+  }
+
+  // Check right
+  if (i+1 < this.grid.length && !this.grid[i+1][j].isObstacle){
+    // Set up node variables 
+    this.grid[i+1][j].G = parent.G + MOVE_COST;
+    this.grid[i+1][j].parent = parent;
+    this.grid[i+1][j].setHeuristic(this.goal);
+
+    // Add to open list
+    this.addToOpenList(this.grid[i+1][j],open,closed);
+  }
+
+  // Check bottom right
+  if (j+1 < this.grid[i].length && i+1 < this.grid.length && 
+    !this.grid[i+1][j+1].isObstacle){
+    // Set up node variables 
+    this.grid[i+1][j+1].G = parent.G + MOVE_COST;
+    this.grid[i+1][j+1].parent = parent;
+    this.grid[i+1][j+1].setHeuristic(this.goal);
+
+    // Add to open list
+    this.addToOpenList(this.grid[i+1][j+1],open,closed);
+  }
+
+  // Check bottom
+  if (j+1 < this.grid[i].length && !this.grid[i][j+1].isObstacle){
+    // Set up node variables 
+    this.grid[i][j+1].G = parent.G + MOVE_COST;
+    this.grid[i][j+1].parent = parent;
+    this.grid[i][j+1].setHeuristic(this.goal);
+
+    // Add to open list
+    this.addToOpenList(this.grid[i][j+1],open,closed);
+  }
+
+  // Check bottom left
+  if (j+1 < this.grid[i].length && i-1 >= 0 && 
+    !this.grid[i-1][j+1].isObstacle){
+    // Set up node variables 
+    this.grid[i-1][j+1].G = parent.G + MOVE_COST;
+    this.grid[i-1][j+1].parent = parent;
+    this.grid[i-1][j+1].setHeuristic(this.goal);
+
+    // Add to open list
+    this.addToOpenList(this.grid[i-1][j+1],open,closed);
+  }
+}
+
+// Add to open
+PathHandler.prototype.addToOpenList = function(node, open,closed){
+  // Check if legal
+  for (var i = 0; i < open.length; i++){
+    if (open[i].i == node.i && open[i].j == node.j)
+    {
+      /*if (node.G < open[i].G){
+        open[i].G = node.G;
+        open[i].parent = node.parent;
+      }*/
+      return;
+    }
+  }
+  for (var i = 0; i < closed.length; i++){
+    if (closed[i].i == node.i && closed[i].j == node.j)
+    {
+      /*if (node.G < closed[i].G){
+        closed[i].G = node.G;
+        closed[i].parent = node.parent;
+      }*/
+      return;
+    }
+  }
+
+  open.push(node);
 }
 
 /** ================================= **/
