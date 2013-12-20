@@ -283,8 +283,8 @@ var COLOR_FOUNDPATH_NODE = 0x0000ff;
 var NODE_SIZE = 5;
 
 // A* Movement costs 
-var MOVE_COST = 1;
-var MOVE_COST_DIAG = 2;
+var MOVE_COST = 5;
+var MOVE_COST_DIAG = 7;
 
 /** Node to be used in grid **/
 function Node(i,j){
@@ -318,7 +318,8 @@ Node.prototype.setHeuristic = function(goal){
   var dy = Math.abs(this.j - goal.j) * NODE_SIZE;
   // Movement cost 
   var D = 1;
-  this.H = D * Math.max(dx, dy);
+  //this.H = D * Math.max(dx, dy);
+  this.H = Math.sqrt((dx*dx) + (dy*dy));
 }
 
 /** Find the path through the grid **/
