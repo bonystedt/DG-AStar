@@ -208,8 +208,7 @@ PathHandler.prototype.resetGridFully = function(){
   this.goal.j = this.gridHeight - 1;
 
   // Set start and goal colors 
-  this.grid[this.start.i][this.start.j].setColor(COLOR_START_NODE);
-  this.grid[this.goal.i][this.goal.j].setColor(COLOR_GOAL_NODE);
+  this.fixStartGoalColors();
 }
 
 /** Remove Pathfinding from grid **/ 
@@ -220,7 +219,9 @@ PathHandler.prototype.resetGridPath = function(){
 	      this.grid[i][j].setColor(COLOR_NORMAL_NODE);
 			}
 	    
-	    this.grid[i][j].parent = -1;
+      this.grid[i][j].parent = -1;
+	    this.grid[i][j].G = 0;
+      this.grid[i][j].H = 0;
     }
   }
 }
@@ -259,6 +260,13 @@ PathHandler.prototype.isOnGrid = function(i,j){
 		j < 0 || j > this.gridHeight - 1)
 		return false;
 	return true;
+}
+
+/** **/
+PathHandler.prototype.fixStartGoalColors = function(){
+  // Set start and goal colors 
+  this.grid[this.start.i][this.start.j].setColor(COLOR_START_NODE);
+  this.grid[this.goal.i][this.goal.j].setColor(COLOR_GOAL_NODE);
 }
 
 /** ================================= **/
@@ -353,24 +361,19 @@ PathHandler.prototype.findPath = function(){
   }
   
   // Set correct path colors 
-  var i = 0;
-  console.clear();
   while (current.parent != -1){
     // Set node color
     current.setColor(COLOR_FOUNDPATH_NODE)
 
     // Move to next node 
     current = current.parent;
-
-    console.log(current.i + ", " + current.j);
-
-    i++;
-    if (i>=2500)break;
   }
 
   // Set path made to true 
   this.pathMade = true;
   SCREEN_DIRTY = true;
+
+  this.fixStartGoalColors();
 }
 
 /** Add Neighbors of this node to the open list **/
@@ -511,6 +514,10 @@ PathHandler.prototype.addToOpenList = function(dummy_node,open,closed,mi,mj){
 
 /** Generate the amount of Obstacles sent **/
 PathHandler.prototype.generateObstacles = function(amount){
+  // Fix grid colors 
+  this.resetGridPath();
+
+  // Make obsticles 
 	for (var i = 0; i < amount; i++){
 		this.genViralObs();
 	}
