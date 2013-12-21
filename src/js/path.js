@@ -298,13 +298,27 @@ function Node(i,j){
   this.isObstacle = false;
   // Node mesh for drawing 
   this.mesh = makeSprite(NODE_SIZE,NODE_SIZE,'res/node.png');
+  // Tell the mesh to use vertex shading 
+  this.mesh.material.vertexColors = THREE.VertexColors;
   // Parent node to this one 
   this.parent = -1;
 }
 
 /** Shortcut to set nodes color easily **/
 Node.prototype.setColor = function(color){
-	this.mesh.material.color.setHex(color);
+	//this.mesh.material.color.setHex(color);
+
+  for (var i = 0; i < this.mesh.geometry.faces.length; i++){
+    this.mesh.geometry.faces[i].vertexColors = [];
+    for (var j = 0; j < 3; j++){
+      this.mesh.geometry.faces[i].vertexColors[j] = new THREE.Color(color);
+    }
+  }
+
+  // This state must be set to true in order for colors to change. 
+  // If not set to true here, the colors will not change after they 
+  // set once. 
+  this.mesh.geometry.colorsNeedUpdate = true;
 }
 
 // Get node F score 
