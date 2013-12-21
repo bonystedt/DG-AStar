@@ -9,9 +9,10 @@ function PathHandler(){
 	// Grid 
 	this.gridDrawLoc = {x:190,y:40};
 	this.gridSpacing = 1;
-	this.gridWidth = 50;
-	this.gridHeight = 50;
+	this.gridWidth = 100;
+	this.gridHeight = 100;
 	this.grid = [];
+  this.gridMesh;
 
 	// Start & Goal 
 	this.start = {i:0,j:0};
@@ -166,19 +167,34 @@ function distance(x,y,x2,y2){
 
 /** Make a new grid **/
 PathHandler.prototype.makeGrid = function(){
+  // Make Grid Mesh
+  var texture = THREE.ImageUtils.loadTexture('res/node.png');
+  var mat = new THREE.MeshBasicMaterial({map:texture});
+  this.gridMesh = new THREE.Mesh(new THREE.Geometry(), mat);
+  // Tell the mesh to use vertex shading 
+  this.gridMesh.material.vertexColors = THREE.VertexColors;
+
 	// Make the grid array and set properties for each node 
   this.grid = [this.gridWidth];
   for (var i = 0; i < this.gridWidth; i++){
     this.grid[i] = [this.gridHeight];
     for (var j = 0; j < this.gridHeight; j++){
+      // Make the node
       this.grid[i][j] = new Node(i,j); 
-      this.grid[i][j].setColor(COLOR_NORMAL_NODE);
-      this.grid[i][j].mesh.position.set(
+
+      // Add a mesh to the grid mesh
+      var sprite =  makeSprite(NODE_SIZE,NODE_SIZE,'res/node.png');
+      sprite.position.set(
       	this.gridDrawLoc.x + ((NODE_SIZE+ this.gridSpacing) * i),
       	this.gridDrawLoc.y + ((NODE_SIZE + this.gridSpacing) * j), 0);
-      this.scene.add(this.grid[i][j].mesh);
+      THREE.GeometryUtils.merge(this.gridMesh.geometry, sprite);
+
+      // Set the color for the added mesh 
+      this.grid[i][j].setColor(COLOR_NORMAL_NODE);
     }
   }
+
+  this.scene.add(this.gridMesh);
 
   // Set start and goal location 
   this.start.i = 0;
@@ -296,29 +312,24 @@ function Node(i,j){
   this.H = 0;
   // Set true to make impassible 
   this.isObstacle = false;
-  // Node mesh for drawing 
-  this.mesh = makeSprite(NODE_SIZE,NODE_SIZE,'res/node.png');
-  // Tell the mesh to use vertex shading 
-  this.mesh.material.vertexColors = THREE.VertexColors;
   // Parent node to this one 
   this.parent = -1;
 }
 
 /** Shortcut to set nodes color easily **/
 Node.prototype.setColor = function(color){
-	//this.mesh.material.color.setHex(color);
+  // Determine the face index 
+  var faceNum = 2 * ((this.i * path.gridHeight) + this.j);
 
-  for (var i = 0; i < this.mesh.geometry.faces.length; i++){
-    this.mesh.geometry.faces[i].vertexColors = [];
-    for (var j = 0; j < 3; j++){
-      this.mesh.geometry.faces[i].vertexColors[j] = new THREE.Color(color);
-    }
+  for (var i = 0; i < 3; i++){
+    path.gridMesh.geometry.faces[faceNum].vertexColors[i] = new THREE.Color(color);
+    path.gridMesh.geometry.faces[faceNum+1].vertexColors[i] = new THREE.Color(color);
   }
 
   // This state must be set to true in order for colors to change. 
   // If not set to true here, the colors will not change after they 
   // set once. 
-  this.mesh.geometry.colorsNeedUpdate = true;
+  path.gridMesh.geometry.colorsNeedUpdate = true;
 }
 
 // Get node F score 
