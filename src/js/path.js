@@ -418,14 +418,17 @@ PathHandler.prototype.addNeighbors = function(i,j,open,closed,parent){
 
   // Check Top Left 
   if (i-1 >= 0 && j-1 >= 0 && !this.grid[i-1][j-1].isObstacle){
-    // Set up node variables 
-    var dummy_node = new Node(i-1,j-1);
-    dummy_node.G = parent.G + MOVE_COST;
-    dummy_node.parent = parent;
-    dummy_node.setHeuristic(this.goal);
+    // Check if cutting corner 
+    if (!this.grid[i-1][j].isObstacle && !this.grid[i][j-1].isObstacle){
+      // Set up node variables 
+      var dummy_node = new Node(i-1,j-1);
+      dummy_node.G = parent.G + MOVE_COST;
+      dummy_node.parent = parent;
+      dummy_node.setHeuristic(this.goal);
 
-    // Add to open list
-    this.addToOpenList(dummy_node,open,closed,i-1,j-1);
+      // Add to open list
+      this.addToOpenList(dummy_node,open,closed,i-1,j-1);
+    }
   }
 
   // Check top
@@ -442,14 +445,17 @@ PathHandler.prototype.addNeighbors = function(i,j,open,closed,parent){
 
   // Check top right 
   if (i+1 < this.grid.length && j-1 >= 0 && !this.grid[i+1][j-1].isObstacle){
-    // Set up node variables 
-    var dummy_node = new Node(i+1,j-1);
-    dummy_node.G = parent.G + MOVE_COST;
-    dummy_node.parent = parent;
-    dummy_node.setHeuristic(this.goal);
+    // Check if cutting corner 
+    if (!this.grid[i+1][j].isObstacle && !this.grid[i][j-1].isObstacle){
+      // Set up node variables 
+      var dummy_node = new Node(i+1,j-1);
+      dummy_node.G = parent.G + MOVE_COST;
+      dummy_node.parent = parent;
+      dummy_node.setHeuristic(this.goal);
 
-    // Add to open list
-    this.addToOpenList(dummy_node,open,closed,i+1,j-1);
+      // Add to open list
+      this.addToOpenList(dummy_node,open,closed,i+1,j-1);
+    }
   }
 
   // Check right
@@ -467,14 +473,17 @@ PathHandler.prototype.addNeighbors = function(i,j,open,closed,parent){
   // Check bottom right
   if (i+1 < this.grid.length && j+1 < this.grid[i].length && 
     !this.grid[i+1][j+1].isObstacle){
-    // Set up node variables 
-    var dummy_node = new Node(i+1,j+1);
-    dummy_node.G = parent.G + MOVE_COST;
-    dummy_node.parent = parent;
-    dummy_node.setHeuristic(this.goal);
+    // Check if cutting corner 
+    if (!this.grid[i+1][j].isObstacle && !this.grid[i][j+1].isObstacle){
+      // Set up node variables 
+      var dummy_node = new Node(i+1,j+1);
+      dummy_node.G = parent.G + MOVE_COST;
+      dummy_node.parent = parent;
+      dummy_node.setHeuristic(this.goal);
 
-    // Add to open list
-    this.addToOpenList(dummy_node,open,closed,i+1,j+1);
+      // Add to open list
+      this.addToOpenList(dummy_node,open,closed,i+1,j+1);
+    }
   }
 
   // Check bottom
@@ -492,14 +501,17 @@ PathHandler.prototype.addNeighbors = function(i,j,open,closed,parent){
   // Check bottom left
   if (i-1 >= 0 && j+1 < this.grid[i].length && 
     !this.grid[i-1][j+1].isObstacle){
-    // Set up node variables 
-    var dummy_node = new Node(i-1,j+1);
-    dummy_node.G = parent.G + MOVE_COST;
-    dummy_node.parent = parent;
-    dummy_node.setHeuristic(this.goal);
+    // Check if cutting corner 
+    if (!this.grid[i-1][j].isObstacle && !this.grid[i][j+1].isObstacle){
+      // Set up node variables 
+      var dummy_node = new Node(i-1,j+1);
+      dummy_node.G = parent.G + MOVE_COST;
+      dummy_node.parent = parent;
+      dummy_node.setHeuristic(this.goal);
 
-    // Add to open list
-    this.addToOpenList(dummy_node,open,closed,i-1,j+1);
+      // Add to open list
+      this.addToOpenList(dummy_node,open,closed,i-1,j+1);
+    }
   }
 }
 
