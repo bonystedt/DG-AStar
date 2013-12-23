@@ -31,22 +31,65 @@ function mButton(x,y,width,height,image, clickFunc){
 	// Size
 	this.w = width;
 	this.h = height;
-	// Clicking functions 
+	// States
 	this.clicked = false;
 	this.onClick = clickFunc;
-	// Image 
+	// Mesh
 	this.mesh = makeSprite(width,height,image);
 	this.mesh.position.set(x,y,0);
+
+	// Set this to true to use these
+	this.useAdvancedRendering = false;
+	this.drawState = ButtonState.Normal;
+	// Normal Texture
+	this.tNormal = this.mesh.material.map;
+	// Hover Texture
+	this.tHover; 
+	// Clicked Texture
+	this.tClick;
 }
+
+/** Brush Types */
+var ButtonState = { 
+  "Normal": 0,
+  "Hover": 1, 
+  "Click": 2
+};
 
 /** Update Button state **/
 mButton.prototype.update = function(){
 	// Check if clicked 
-	if (this.contains(mouse.x, mouse.y) && mouse.left_down && !mouse.left_down_old){
-		if (this.onClick != null)
-			this.onClick();
-		else 
-			clicked = true;
+	if (this.contains(mouse.x, mouse.y)){
+		// Change to hovering picture
+		if (this.useAdvancedRendering && this.drawState != ButtonState.Hover) {
+			this.mesh.material.map = this.tHover;
+			this.drawState = ButtonState.Hover;
+			SCREEN_DIRTY = true;
+		}
+		if (mouse.left_down){
+			// Change to clicked picture 
+			if (this.useAdvancedRendering && this.drawState != ButtonState.Click) {
+				this.mesh.material.map = this.tClick;
+				this.drawState = ButtonState.Click;
+				SCREEN_DIRTY = true;
+			}
+			
+			// Check if clicked 
+			if (!mouse.left_down_old){
+				if (this.onClick != null)
+					this.onClick();
+				else 
+					clicked = true;
+			}
+		}
+	}
+	else {
+		// Change to normal picture 
+		if (this.useAdvancedRendering && this.drawState != ButtonState.Normal) {
+			this.mesh.material.map = this.tNormal;
+			this.drawState = ButtonState.Normal;
+			SCREEN_DIRTY = true;
+		}
 	}
 }
 
@@ -60,8 +103,8 @@ mButton.prototype.contains = function(x,y){
 
 /** Check if button has been clicked **/
 mButton.prototype.isClicked = function(){
-	if (isClicked){
-		isClicked = false;
+	if (clicked){
+		clicked = false;
 		return true;
 	}
 	return false;
@@ -134,11 +177,15 @@ UIHandler.prototype.init = function(){
 	/** ================ **/
 	/** Buttons          **/
 	/** ================ **/
+
 	// Make Reset button 
 	var button = new mButton(16,52,72,32,'res/button_reset.png', 
 		function(){
 			path.resetGridFully();
 			SCREEN_DIRTY = true;});
+	button.useAdvancedRendering = true;
+	button.tHover = THREE.ImageUtils.loadTexture('res/button_reset_hover.png');
+	button.tClick = THREE.ImageUtils.loadTexture('res/button_reset_click.png');
 	this.scene.add(button.mesh);
 	this.children.push(button);
 
@@ -147,6 +194,9 @@ UIHandler.prototype.init = function(){
 		function(){
 			path.findPath();
 			SCREEN_DIRTY = true;});
+	button.useAdvancedRendering = true;
+	button.tHover = THREE.ImageUtils.loadTexture('res/button_find_path_hover.png');
+	button.tClick = THREE.ImageUtils.loadTexture('res/button_find_path_click.png');
 	this.scene.add(button.mesh);
 	this.children.push(button);
 
@@ -155,6 +205,9 @@ UIHandler.prototype.init = function(){
 		function(){
 			path.generateObstacles(20);
 			SCREEN_DIRTY = true;});
+	button.useAdvancedRendering = true;
+	button.tHover = THREE.ImageUtils.loadTexture('res/button_gen_obst_hover.png');
+	button.tClick = THREE.ImageUtils.loadTexture('res/button_gen_obst_click.png');
 	this.scene.add(button.mesh);
 	this.children.push(button);
 
